@@ -4,7 +4,7 @@
   "description": "to do list application(Node.js,javascript, Azure CLI, Azure Functions Core Tools)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server/index.js"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,15 @@
   "bugs": {
     "url": "https://github.com/Aleks01101/todo-list/issues"
   },
-  "homepage": "https://github.com/Aleks01101/todo-list#readme"
+  "homepage": "https://github.com/Aleks01101/todo-list#readme",
+  "dependencies": {
+    "@koa/router": "^8.0.8",
+    "koa": "^2.11.0",
+    "koa-ejs": "^4.3.0",
+    "koa-router": "^8.0.8",
+    "koa-static": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  }
 }
