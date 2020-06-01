@@ -3,7 +3,9 @@ const Koa = require('koa')
 const serve = require('koa-static')
 const logger = require('koa-static')
 const favicon = require('koa-favicon')
-
+const storage = require('azure-storage')
+const parse = require('koa-bodyparser')
+const uuid = require('uuid')
 
 const app = new Koa()
 const port = process.env.PORT || 3000
@@ -11,7 +13,9 @@ const port = process.env.PORT || 3000
 app.use(favicon('./client/favicon.ico'))
 app.use(logger())
 
-app.use(serve(path.resolve(__dirname, '..', 'client')))
+require('./store').init()
+app.use(serve('client'))
+app.use(parse())
 
 const userRoutes = require('./routes/users')
 app.use(userRoutes.routes())
@@ -21,4 +25,3 @@ app.use(taskRoutes.routes())
 
 app.listen(port)
 
-console.log('App is listening at http://127.0.0.1:3000')
