@@ -2,6 +2,8 @@ const addTaskForm = document.querySelector('#addTaskForm')
 const addTaskTitle = document.querySelector('#addTaskForm #title')
 const addTaskBtn = document.querySelector('#addTaskBtn')
 const addTaskMsg = document.querySelector('#addTaskMsg')
+const tasksList = document.querySelector('#tasksList')
+const tasksListMsg = document.querySelector('#tasksListMsg')
 
 const addTask = async () => {
   const data = new FormData(addTaskForm)
@@ -46,3 +48,57 @@ addTaskForm.addEventListener('submit', (event) => {
       })
   }, 1000)    
 })
+
+const listTasks = async () => {
+    tasksList.innerHTML = ''
+    tasksListMsg.classList.remove('is-danger')
+    tasksListMsg.classList.add('is-hidden')
+  
+    fetch('/api/tasks')
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response.statusText)
+        }
+  
+        return response.json()
+      })
+      .then((response) => {
+        response.forEach((task) => {
+          const title = document.createElement('td')
+          title.innerHTML = `<p>${task.title}</p>`
+  
+          const row = document.createElement('tr')
+          row.appendChild(title)
+  
+          tasksList.appendChild(row)
+        })
+      })
+      .catch(() => {
+        tasksListMsg.textContent = 'Wystąpił błąd podczas pobierania listy zadań. Spróbuj ponownie później.'
+        tasksListMsg.classList.add('is-danger')
+      })
+  }
+  
+  listTasks()
+
+  setTimeout(() => {
+    fetch(`/api/tasks?id=${id}`, { method: 'DELETE' })
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response.statusText)
+        }
+
+        tasksListMsg.textContent = 'Pomyślnie usunięto zadanie.'
+        tasksListMsg.classList.add('is-success')
+
+        listTasks()
+      })
+      .catch(() => {
+        button.classList.remove('is-loading')
+        tasksListMsg.textContent = 'Wystąpił błąd podczas usuwania zadania. Spróbuj ponownie później.'
+        tasksListMsg.classList.add('is-danger')
+      })
+      .finally(() => {
+        tasksListMsg.classList.remove('is-hidden')
+      })
+  }, 1000)
