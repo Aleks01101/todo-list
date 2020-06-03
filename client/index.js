@@ -102,3 +102,67 @@ const listTasks = async () => {
         tasksListMsg.classList.remove('is-hidden')
       })
   }, 1000)
+
+  const listTasks = async () => {
+    tasksList.innerHTML = ''
+    tasksListMsg.classList.remove('is-danger')
+    tasksListMsg.classList.add('is-hidden')
+  
+    fetch('/api/tasks')
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response.statusText)
+        }
+  
+        return response.json()
+      })
+      .then((response) => {
+        response.forEach((task) => {
+          const title = document.createElement('td')
+          title.innerHTML = `<p>${task.title}</p>`
+  
+          const actions = document.createElement('td')
+          actions.classList.add('has-text-right')
+          actions.innerHTML = `<button class="button is-small is-primary" id="deleteTask${task.id}" onclick="completeTask('${task.id}');"><span class="icon is-small"><i class="fas fa-check"></i></span></button>`
+  
+          const row = document.createElement('tr')
+          row.appendChild(title)
+          row.appendChild(actions)
+  
+          tasksList.appendChild(row)
+        })
+      })
+      .catch(() => {
+        tasksListMsg.textContent = 'Wystąpił błąd podczas pobierania listy zadań. Spróbuj ponownie później.'
+        tasksListMsg.classList.add('is-danger')
+      })
+  }
+  const completeTask = (id) => {
+    tasksListMsg.classList.remove('is-danger')
+    tasksListMsg.classList.add('is-hidden')
+  
+    const button = document.querySelector(`#deleteTask${id}`)
+    button.classList.add('is-loading')
+  
+    setTimeout(() => {
+      fetch(`/api/tasks?id=${id}`, { method: 'DELETE' })
+        .then((response) => {
+          if (!response.ok) {
+            throw Error(response.statusText)
+          }
+  
+          tasksListMsg.textContent = 'Pomyślnie usunięto zadanie.'
+          tasksListMsg.classList.add('is-success')
+  
+          listTasks()
+        })
+        .catch(() => {
+          button.classList.remove('is-loading')
+          tasksListMsg.textContent = 'Wystąpił błąd podczas usuwania zadania. Spróbuj ponownie później.'
+          tasksListMsg.classList.add('is-danger')
+        })
+        .finally(() => {
+          tasksListMsg.classList.remove('is-hidden')
+        })
+    }, 1000)
+  }
